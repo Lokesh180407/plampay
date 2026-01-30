@@ -1,12 +1,31 @@
 const { logger } = require('../config/logger');
 
 function notFoundHandler(req, res, next) {
+  const availableRoutes = [
+    'GET /',
+    'GET /api/health',
+    'POST /api/auth/signup',
+    'POST /api/auth/login',
+    'POST /api/kyc/upload',
+    'POST /api/palm/enroll',
+    'POST /api/wallet/set-pin',
+    'POST /api/wallet/verify-pin',
+    'POST /api/wallet/balance',
+    'POST /api/wallet/topup',
+    'POST /api/wallet/webhook',
+    'POST /api/payment/scan-pay',
+    'POST /api/admin/verify-kyc',
+    'POST /api/admin/terminals',
+  ];
+
   res.status(404).json({
     success: false,
     message: `Route ${req.method} ${req.originalUrl} not found`,
     suggestion: req.originalUrl.startsWith('/api')
       ? 'Check if the URL and HTTP method are correct'
-      : 'Try prefixing the path with /api'
+      : 'Try prefixing the path with /api',
+    availableRoutes: availableRoutes,
+    requestedRoute: `${req.method} ${req.originalUrl}`,
   });
 }
 

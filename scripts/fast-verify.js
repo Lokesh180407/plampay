@@ -1,50 +1,129 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+/**
+ * Quick Route Test Script
+ * Tests routes with correct HTTP methods to verify they're working
+ */
 
-async function main() {
-    console.log('Testing systems without bcrypt...');
+const https = require('https');
+const http = require('http');
 
-    try {
-        const email = 'test' + Date.now() + '@test.com';
-        const phone = 'P' + Date.now();
+// Change this to your Render URL
+const BASE_URL = process.env.TEST_URL || 'http://localhost:3000';
 
-        // Use a pre-generated hash for "pass123" to avoid requiring bcrypt
-        const dummyHash = '$2b$10$xyz';
+function makeRequest(method, path, data = null) {
+    return new Promise((resolve, reject) => {
+        const url = new URL(path, BASE_URL);
+        const isHttps = url.protocol === 'https:';
+        const client = isHttps ? https : http;
 
-        const user = await prisma.user.create({
-            data: {
-                email: email,
-                phone: phone,
-                passwordHash: dummyHash,
-                wallet: { create: { balance: 0 } }
+        const options = {
+            method,
+            hostname: url.hostname,
+            port: url.port || (isHttps ? 443 : 80),
+            path: url.pathname,
+            headers: {
+                'Content-Type': 'application/json',
             },
-            include: { wallet: true }
-        });
-        console.log(`✅ User created: ${user.id}`);
+        };
 
-        const updatedWallet = await prisma.wallet.update({
-            where: { id: user.wallet.id },
-            data: {
-                balance: 1000,
-                transfers: {
-                    create: {
-                        amount: 1000,
-                        type: 'TOPUP',
-                        status: 'SUCCESS',
-                        description: 'Testing amount addition'
-                    }
+        if (data) {
+            const body = JSON.stringify(data);
+            options.headers['Content-Length'] = Buffer.byteLength(body);
+        }
+
+        const req = client.request(options, (res) => {
+            let body = '';
+            res.on('data', (chunk) => (body += chunk));
+            res.on('end', () => {
+                try {
+                    const json = JSON.parse(body);
+                    resolve({ status: res.statusCode, data: json });
+                } catch (e) {
+                    resolve({ status: res.statusCode, data: body });
                 }
-            }
+            });
         });
 
-        console.log(`✅ Money added! New balance: ${updatedWallet.balance}`);
-        console.log('✨ ALL SYSTEMS FUNCTIONAL');
-
-    } catch (e) {
-        console.error('❌ FAILED:', e.message);
-    } finally {
-        await prisma.$disconnect();
-    }
+        req.on('error', reject);
+        if (data) {
+            req.write(JSON.stringify(data));
+        }
+        req.end();
+    });
 }
 
-main();
+async function testRoutes() {
+    console.log(`\n🧪 Testing routes on: ${BASE_URL}\n`);
+
+    // Test 1: Root endpoint (GET)
+    console.log('1️⃣  Testing GET / ...');
+    try {
+        const result = await makeRequest('GET', '/');
+        console.log(`   ✅ Status: ${result.status}`);
+        console.log(`   Response:`, JSON.stringify(result.data, null, 2));
+    } catch (error) {
+        console.log(`   ❌ Error: ${error.message}`);
+    }
+
+    // Test 2: Health check (GET)
+    console.log('\n2️⃣  Testing GET /api/health ...');
+    try {
+        const result = await makeRequest('GET', '/api/health');
+        console.log(`   ✅ Status: ${result.status}`);
+        console.log(`   Response:`, JSON.stringify(result.data, null, 2));
+    } catch (error) {
+        console.log(`   ❌ Error: ${error.message}`);
+    }
+
+    // Test 3: Signup endpoint (POST - should return 400 for missing data)
+    console.log('\n3️⃣  Testing POST /api/auth/signup (no data - expect 400) ...');
+    try {
+        const result = await makeRequest('POST', '/api/auth/signup');
+        console.log(`   ✅ Status: ${result.status}`);
+        if (result.status === 400) {
+            console.log(`   ✅ Correct! Route exists and validates input`);
+        } else if (result.status === 404) {
+            console.log(`   ❌ ERROR: Route not found! This is the problem.`);
+        }
+        console.log(`   Response:`, JSON.stringify(result.data, null, 2));
+    } catch (error) {
+        console.log(`   ❌ Error: ${error.message}`);
+    }
+
+    // Test 4: Login endpoint (POST - should return 400 for missing data)
+    console.log('\n4️⃣  Testing POST /api/auth/login (no data - expect 400) ...');
+    try {
+        const result = await makeRequest('POST', '/api/auth/login');
+        console.log(`   ✅ Status: ${result.status}`);
+        if (result.status === 400) {
+            console.log(`   ✅ Correct! Route exists and validates input`);
+        } else if (result.status === 404) {
+            console.log(`   ❌ ERROR: Route not found! This is the problem.`);
+        }
+        console.log(`   Response:`, JSON.stringify(result.data, null, 2));
+    } catch (error) {
+        console.log(`   ❌ Error: ${error.message}`);
+    }
+
+    // Test 5: Wrong method on signup (GET instead of POST)
+    console.log('\n5️⃣  Testing GET /api/auth/signup (wrong method - expect 404) ...');
+    try {
+        const result = await makeRequest('GET', '/api/auth/signup');
+        console.log(`   Status: ${result.status}`);
+        if (result.status === 404) {
+            console.log(`   ✅ Correct! GET is not allowed, only POST`);
+        }
+        console.log(`   Response:`, JSON.stringify(result.data, null, 2));
+    } catch (error) {
+        console.log(`   ❌ Error: ${error.message}`);
+    }
+
+    console.log('\n' + '='.repeat(60));
+    console.log('📊 SUMMARY:');
+    console.log('='.repeat(60));
+    console.log('If you see 404 for POST requests, routes are NOT working.');
+    console.log('If you see 400/401 for POST requests, routes ARE working!');
+    console.log('404 for GET on POST-only routes is EXPECTED and CORRECT.');
+    console.log('='.repeat(60) + '\n');
+}
+
+testRoutes().catch(console.error);

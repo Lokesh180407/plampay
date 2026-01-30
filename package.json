@@ -12,7 +12,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "verify": "node v.js"
+    "verify": "node v.js",
+    "verify:routes": "node scripts/verify-routes.js"
   },
   "keywords": [
     "payments",
