@@ -29,6 +29,18 @@ app.use('/api/', apiLimiter);
 // Logging
 app.use(httpLogger);
 
+// Basic root route
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'PlamPay API Server is running',
+    endpoints: {
+      health: '/api/health',
+      docs: '/api/auth/login (Example)'
+    }
+  });
+});
+
 // Mount routes
 app.use('/api', routes);
 

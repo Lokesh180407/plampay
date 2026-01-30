@@ -3,7 +3,10 @@ const { logger } = require('../config/logger');
 function notFoundHandler(req, res, next) {
   res.status(404).json({
     success: false,
-    message: 'Route not found',
+    message: `Route ${req.method} ${req.originalUrl} not found`,
+    suggestion: req.originalUrl.startsWith('/api')
+      ? 'Check if the URL and HTTP method are correct'
+      : 'Try prefixing the path with /api'
   });
 }
 
