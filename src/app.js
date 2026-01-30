@@ -11,6 +11,9 @@ const { errorHandler, notFoundHandler } = require('./middleware/error');
 
 const app = express();
 
+// Trust proxy for Render/proxies (required for express-rate-limit)
+app.set('trust proxy', 1);
+
 // Security & parsing middleware
 app.use(helmet());
 app.use(cors());
