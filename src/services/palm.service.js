@@ -18,9 +18,10 @@ async function enrollPalm(userId, embedding) {
     },
   });
 
+  // Palm enrollment IS KYC - mark user as KYC approved
   await prisma.user.update({
     where: { id: userId },
-    data: { palmRegistered: true },
+    data: { palmRegistered: true, kycStatus: 'APPROVED' },
   });
 
   return palmData;

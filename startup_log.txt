@@ -1,0 +1,4 @@
+﻿[INFO] Γ£à Database connected successfully
+[INFO] ≡ƒÜÇ Server listening on port 3000
+[INFO] ≡ƒôí API available at http://192.168.1.132:3000/api
+[INFO] Γ¥ñ∩╕Å  Health check: http://192.168.1.132:3000/api/health

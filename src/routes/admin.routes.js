@@ -4,6 +4,7 @@ const validate = require('../middleware/validate');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const kycController = require('../controllers/kyc.controller');
 const terminalController = require('../controllers/terminal.controller');
+const adminController = require('../controllers/admin.controller');
 
 const router = express.Router();
 
@@ -41,6 +42,13 @@ router.post(
   requireAdmin,
   validate(createTerminalSchema),
   terminalController.create
+);
+
+router.get(
+  '/users',
+  requireAuth,
+  requireAdmin,
+  adminController.getAllUsers
 );
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const path = require('path');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Load environment variables
 dotenv.config();

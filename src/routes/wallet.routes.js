@@ -42,7 +42,10 @@ const topupSchema = Joi.object({
 router.post('/set-pin', requireAuth, validate(setPinSchema), walletController.setPin);
 router.post('/verify-pin', requireAuth, validate(verifyPinSchema), walletController.verifyPin);
 router.post('/balance', requireAuth, validate(balanceSchema), walletController.getBalance);
+router.get('/balance', requireAuth, walletController.getBalanceSimple);
 router.post('/topup', requireAuth, validate(topupSchema), walletController.topup);
+router.post('/test-topup', requireAuth, validate(topupSchema), walletController.testTopup);
+router.post('/demo-topup', requireAuth, validate(topupSchema), walletController.testTopup);
 
 // Webhook for payment gateway
 router.post('/webhook', paymentController.handleWebhook);

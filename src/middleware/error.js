@@ -14,6 +14,7 @@ function notFoundHandler(req, res, next) {
     'POST /api/wallet/topup',
     'POST /api/wallet/webhook',
     'POST /api/payment/scan-pay',
+    'POST /api/mall/scan-pay',
     'POST /api/admin/verify-kyc',
     'POST /api/admin/terminals',
   ];

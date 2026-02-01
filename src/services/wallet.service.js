@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const prisma = require('../config/prisma');
 
 function getSaltRounds() {
@@ -122,6 +122,42 @@ async function completeTopup(transactionId, gatewayOrderId, gatewayProvider = 'R
   };
 }
 
+async function creditBalanceTest(userId, amount) {
+  const wallet = await getWalletByUserId(userId);
+
+  if (amount <= 0) {
+    const err = new Error('Amount must be greater than 0');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const newBalance = Number(wallet.balance) + Number(amount);
+
+  const result = await prisma.$transaction(async (tx) => {
+    const transaction = await tx.transaction.create({
+      data: {
+        walletId: wallet.id,
+        amount,
+        type: 'TOPUP',
+        status: 'SUCCESS',
+        description: 'Test wallet top-up (bypass gateway)',
+      },
+    });
+
+    const updatedWallet = await tx.wallet.update({
+      where: { id: wallet.id },
+      data: { balance: newBalance },
+    });
+
+    return { transaction, wallet: updatedWallet };
+  });
+
+  return {
+    transactionId: result.transaction.id,
+    newBalance: Number(result.wallet.balance),
+  };
+}
+
 async function deductBalance(walletId, amount, terminalId, description) {
   const wallet = await prisma.wallet.findUnique({
     where: { id: walletId },
@@ -179,5 +215,6 @@ module.exports = {
   getBalance,
   createTopupOrder,
   completeTopup,
+  creditBalanceTest,
   deductBalance,
 };

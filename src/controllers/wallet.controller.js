@@ -47,6 +47,19 @@ async function getBalance(req, res, next) {
   }
 }
 
+async function getBalanceSimple(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const balance = await walletService.getBalance(userId);
+    res.json({
+      success: true,
+      data: balance,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function topup(req, res, next) {
   try {
     const userId = req.user.id;
@@ -81,9 +94,26 @@ async function topup(req, res, next) {
   }
 }
 
+async function testTopup(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const { amount } = req.body;
+    const result = await walletService.creditBalanceTest(userId, amount);
+    res.json({
+      success: true,
+      message: 'Test top-up successful',
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   setPin,
   verifyPin,
   getBalance,
+  getBalanceSimple,
   topup,
+  testTopup,
 };

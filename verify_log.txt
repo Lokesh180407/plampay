@@ -1,0 +1,10 @@
+﻿Testing database connection and functionality...
+Γ£à Database connected
+≡ƒæñ Creating test user: testuser1769942201036@plampay.com
+Γ£à User created with ID: c88bf727-36fc-4b70-a68d-01b122fac2cd
+≡ƒÆ░ Initial balance: 0 INR
+Γ₧ò Adding test money: 1000...
+Γ£à Transaction successful: fae4289b-56ad-4601-bdbf-c1778df2140d
+≡ƒôè Final balance: 1000 INR
+
+Γ£¿ Database is fully functional and money addition works!

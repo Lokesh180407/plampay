@@ -14,10 +14,10 @@ async function startServer() {
     await prisma.$connect();
     logger.info('✅ Database connected successfully');
 
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       logger.info(`🚀 Server listening on port ${PORT}`);
-      logger.info(`📡 API available at http://localhost:${PORT}/api`);
-      logger.info(`❤️  Health check: http://localhost:${PORT}/api/health`);
+      logger.info(`📡 API available at http://192.168.1.132:${PORT}/api`);
+      logger.info(`❤️  Health check: http://192.168.1.132:${PORT}/api/health`);
     });
   } catch (error) {
     logger.error('❌ Failed to connect to database:', error.message);
@@ -50,4 +50,3 @@ process.on('SIGINT', () => {
     });
   });
 });
-

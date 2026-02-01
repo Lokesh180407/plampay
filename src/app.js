@@ -15,10 +15,15 @@ const app = express();
 app.set('trust proxy', 1);
 
 // Security & parsing middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
 app.use(cors());
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+// Static files
+app.use('/uploads', express.static('uploads'));
 
 // Rate limiting (basic global limiter)
 const apiLimiter = rateLimit({

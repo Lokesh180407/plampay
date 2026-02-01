@@ -13,7 +13,13 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "verify": "node v.js",
-    "verify:routes": "node scripts/verify-routes.js"
+    "verify:routes": "node scripts/verify-routes.js",
+    "test": "jest",
+    "test:unit": "jest tests/unit --verbose",
+    "test:integration": "jest tests/integration --verbose",
+    "test:validation": "jest tests/validation --verbose",
+    "test:all": "jest --coverage --verbose",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "payments",
@@ -27,19 +33,23 @@
   "license": "MIT",
   "dependencies": {
     "@prisma/client": "^6.0.0",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "express-rate-limit": "^7.4.0",
     "helmet": "^7.0.0",
-    "jsonwebtoken": "^9.0.2",
     "joi": "^17.12.3",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "multer": "^2.0.2",
     "razorpay": "^2.9.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",
-    "prisma": "^6.0.0"
+    "prisma": "^6.0.0",
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
   }
 }

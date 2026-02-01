@@ -4,7 +4,7 @@
  */
 
 require('dotenv').config();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const prisma = require('../src/config/prisma');
 
 async function seedAdmin() {

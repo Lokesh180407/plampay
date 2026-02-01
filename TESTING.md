@@ -12,7 +12,7 @@ curl https://your-app.onrender.com/api/auth/signup
 
 ### ✅ Correct (will return 400 validation error):
 ```bash
-curl -X POST https://your-app.onrender.com/api/auth/signup
+curl -X POST http://192.168.1.132:3000/api/auth/signup
 # This is a POST request - will work!
 ```
 
@@ -22,19 +22,19 @@ curl -X POST https://your-app.onrender.com/api/auth/signup
 
 ### Test 1: Health Check (GET - should work)
 ```bash
-curl https://your-app.onrender.com/api/health
+curl http://192.168.1.132:3000/api/health
 ```
 **Expected:** `{"success":true,"status":"healthy",...}`
 
 ### Test 2: Root Endpoint (GET - should work)
 ```bash
-curl https://your-app.onrender.com/
+curl http://192.168.1.132:3000/
 ```
 **Expected:** `{"success":true,"message":"PlamPay API Server is running",...}`
 
 ### Test 3: Signup (POST - should return validation error)
 ```bash
-curl -X POST https://your-app.onrender.com/api/auth/signup \
+curl -X POST http://192.168.1.132:3000/api/auth/signup \
   -H "Content-Type: application/json"
 ```
 **Expected:** `{"success":false,"message":"Validation error",...}` (400 status)
@@ -42,7 +42,7 @@ curl -X POST https://your-app.onrender.com/api/auth/signup \
 
 ### Test 4: Login (POST - should return validation error)
 ```bash
-curl -X POST https://your-app.onrender.com/api/auth/login \
+curl -X POST http://192.168.1.132:3000/api/auth/login \
   -H "Content-Type: application/json"
 ```
 **Expected:** `{"success":false,"message":"Validation error",...}` (400 status)

@@ -1,8 +1,8 @@
 # PlamPay API Routes Documentation
 
 ## Base URL
-- **Local**: `http://localhost:3000`
-- **Production**: `https://your-app.onrender.com`
+- **Local**: `http://192.168.1.132:3000`
+- **Production**: `https://plampay.onrender.com` (Wait for real URL)
 
 ## Public Routes (No Authentication Required)
 
@@ -265,6 +265,56 @@ Authorization: Bearer <token>
     "currency": "INR"
   }
 }
+
+### Get Wallet Balance (Simple - JWT only)
+```
+GET /api/wallet/balance
+Authorization: Bearer <token>
+```
+Returns balance without PIN verification. Use for dashboard display.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "balance": 1000.50,
+    "currency": "INR"
+  }
+}
+```
+
+### Demo Top Up (Alias for test-topup)
+```
+POST /api/wallet/demo-topup
+Authorization: Bearer <token>
+```
+Same as test-topup. Adds demo money directly to wallet.
+
+### Test Top Up Wallet (Bypass Razorpay)
+```
+POST /api/wallet/test-topup
+Authorization: Bearer <token>
+```
+Use this for manual testing to add money directly to your account.
+
+**Request Body:**
+```json
+{
+  "amount": 500
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Test top-up successful",
+  "data": {
+    "transactionId": "txn_uuid",
+    "newBalance": 1500.50
+  }
+}
 ```
 
 ### Payment Webhook
@@ -314,6 +364,41 @@ POST /api/payment/scan-pay
   }
 }
 ```
+
+---
+
+## Mall Routes (No Authentication)
+
+### Scan and Pay (Mall/Shop)
+```
+POST /api/mall/scan-pay
+```
+Used by mall/shop app to deduct payment via palm scan. Identifies user by phone and verifies palm match.
+
+**Request Body:**
+```json
+{
+  "phone": "+919876543210",
+  "palm_bitmap": "base64-encoded-palm-image",
+  "amount": 99.99
+}
+```
+
+**Response (Success):**
+```json
+{
+  "success": true,
+  "message": "Payment successful",
+  "data": {
+    "userId": "uuid",
+    "transactionId": "uuid",
+    "amount": 99.99,
+    "newBalance": 900.51
+  }
+}
+```
+
+**Error Cases:** Palm not matched, user not found, KYC not completed, insufficient balance.
 
 ---
 
@@ -369,6 +454,38 @@ Authorization: Bearer <admin-token>
 }
 ```
 
+### Get All Users
+```
+GET /api/admin/users
+Authorization: Bearer <admin-token>
+```
+Returns a list of all registered users, their KYC status, and wallet balance.
+
+**Response:**
+```json
+{
+  "success": true,
+  "count": 1,
+  "data": [
+    {
+      "id": "uuid",
+      "email": "user@example.com",
+      "phone": "+1234567890",
+      "role": "USER",
+      "kycStatus": "PENDING",
+      "palmRegistered": false,
+      "createdAt": "2024-01-30T13:36:26.000Z",
+      "updatedAt": "2024-01-30T13:36:26.000Z",
+      "wallet": {
+        "balance": "0.00",
+        "currency": "INR"
+      },
+      "kyc": null
+    }
+  ]
+}
+```
+
 ---
 
 ## Error Responses
@@ -418,12 +535,12 @@ Authorization: Bearer <admin-token>
 
 **Test Health:**
 ```bash
-curl https://your-app.onrender.com/api/health
+curl http://192.168.1.132:3000/api/health
 ```
 
 **Test Signup:**
 ```bash
-curl -X POST https://your-app.onrender.com/api/auth/signup \
+curl -X POST http://192.168.1.132:3000/api/auth/signup \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
@@ -435,7 +552,7 @@ curl -X POST https://your-app.onrender.com/api/auth/signup \
 
 **Test Login:**
 ```bash
-curl -X POST https://your-app.onrender.com/api/auth/login \
+curl -X POST http://192.168.1.132:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "test@example.com",
